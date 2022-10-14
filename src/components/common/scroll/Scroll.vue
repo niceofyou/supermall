@@ -36,19 +36,27 @@
     // 2:监听滚动
     this.scroll.on('scroll',(position)=>{
       this.$emit('scroll',position)
-    }),
-     // 3:监听下拉加载更多
-     this.scroll.on('pullingUp',()=>{
      
+    })
+    //  3:监听下拉加载更多
+     this.scroll.on('pullingUp',()=>{
       this.$emit('pullingUp')
      })
+   
   },
   methods:{
     scrollTo(x,y,time=400){
-      this.scroll.scrollTo(x,y,time);
+     this.scroll&&this.scroll.scrollTo(x,y,time);
+    },
+    finishPullUp(){
+      this.scroll&&this.scroll.finishPullUp()
+    },
+    refresh(){
+      this.scroll&&this.scroll.refresh()
+    
     }
       
-    
+   
   },
 
 }

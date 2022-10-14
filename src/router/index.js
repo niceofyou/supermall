@@ -3,7 +3,7 @@ const Home=()=>import('views/home/Home.vue')
 const Category=()=>import('views/category/Category.vue')
 const Cart=()=>import('views/cart/Cart.vue')
 const Profile=()=>import('views/profile/Profile.vue')
-
+const Details=()=>import('views/details/Details.vue')
 
 const routes = [
   {
@@ -36,6 +36,12 @@ const routes = [
     meta:{title:'档案'},
 
   },
+  {
+    path:'/detail/:iid',
+    component:Details,
+    meta:{title:'详情'},
+
+  },
 ]
 
 const router = createRouter({
@@ -44,7 +50,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to,from,next)=>{
+
   document.title=to.matched[0].meta.title
+  
   // console.log(to);
   // console.log('+++++++');
 

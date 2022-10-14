@@ -6,6 +6,13 @@
             <div>购物车</div>
         </template>
     </NavBar>
+    <TabContorl 
+        class=fade-tab-contorl 
+        :tabcontorl="['流行', '新款', '精选']" 
+        @tabclick="tabCclick"
+        v-show="isfadeTabshow"
+        ref="fadetabcontorl">
+      </TabContorl>
     <!--  scroll 滑动组件 -->
     <scroll class="content" 
        ref="scroll" 
@@ -13,13 +20,18 @@
         @scroll="contentscroll"
         @pullingUp="pullingloade">
       <!-- 2：banner -->
-      <Swiper :slideList="banners" :currentIndex="banners.length"></Swiper>
+      <Swiper :slideList="banners" :currentIndex="banners.length"  @swiperload="bannerloade"></Swiper>
       <!-- 3：推荐 -->
       <RecommendView :recommend="recommends"></RecommendView>
       <!-- 4：本周流行 -->
       <FeatureView ></FeatureView>
       <!--5：商品展示 -->
-      <TabContorl class=tabcontorl :tabcontorl="['流行', '新款', '精选']" @tabclick="tabCclick"></TabContorl>
+      <TabContorl 
+        class=tabcontorl  
+        :tabcontorl="['流行', '新款', '精选']" 
+        @tabclick="tabCclick"
+        ref="tabcontorl">
+      </TabContorl>
       <GoodList :goods="goods[goodstype].list"></GoodList> 
     </scroll>
    <Backtop @click.native=" backtop" v-show="isshowtop"></Backtop>
@@ -38,7 +50,8 @@
   import FeatureView from './ChilredCompoents/FeatureView.vue';
 
   import {HomeMultidata,HomeGoods} from 'network/home.js';
-
+  import {debounce} from '@/common/utils'
+  
 
 
 export default {
@@ -68,7 +81,9 @@ export default {
       },
       goodstype:'pop',
       isshowtop:false,
-      isPullUpLoad: false
+      isPullUpLoad: false,
+      tabOffsetTop:0,
+      isfadeTabshow:false
     }
     
   },
@@ -79,11 +94,17 @@ export default {
       this.getgoods('pop'),
       this.getgoods('new'),
       this.getgoods('sell')
-
+  
+  },
+  mounted(){
+    const refresh=debounce(this.$refs.scroll.refresh,300)
+    this.$bus.on('imgloadeover',()=>{
+         refresh()
+      })
   },
 
   methods:{
-     //其他方法，
+  //事件监听方法，
      tabCclick(index){
        switch(index){
          case 0:
@@ -95,29 +116,34 @@ export default {
          case 2:
            this.goodstype='sell'
            break
-         
-
        }
+       this.$refs.tabcontorl.currentIndex=index
+       this.$refs.fadetabcontorl.currentIndex=index
       //  this.goodsindex=index
     },
     backtop(){
       console.log('backtop')
       this.$refs.scroll.scrollTo(0,0)
     },
-       // 隐藏与显示top按钮
+       
     contentscroll(position){
+      // 判断是否显示top按钮
        this.isshowtop=(-position.y)>1000
+        // 判断是否显示top按钮
+        this.isfadeTabshow=(-position.y)>this.tabOffsetTop
     },
      //下拉加载更多
     pullingloade(){
       console.log( '下拉加载更多')
       this.isPullUpLoad = true
       this.getgoods(this.goodstype)
-      this.$refs.scroll.scroll.refresh()
+      this.$refs.scroll.refresh()
       this.isPullUpLoad = false
-
-     
     },
+    bannerloade(){
+      this.tabOffsetTop=this.$refs.tabcontorl.$el.offsetTop
+    },
+
     //网络请求相关方法，
     getbanner(){
       HomeMultidata().then(res => {
@@ -130,7 +156,8 @@ export default {
       HomeGoods(type,page).then(res=>{
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page+=1
-        this.$refs.scroll.scroll.finishPullUp()
+        this.$refs.scroll.finishPullUp()
+      
       })
     },
     tabclick(){
@@ -148,11 +175,11 @@ export default {
    background-color: pink;
    color:white; 
    background-color: var(--color-tint);
-   position:fixed;
+   /* position:fixed;
    left: 0;
    right: 0;
    top: 0;
-   z-index: 9;
+   z-index: 9; */
    height: 44px;
    
  }
@@ -167,8 +194,13 @@ export default {
   
  }
  .tabcontorl{ 
-    position: sticky;
+    /* position: sticky; */
     top: 44px;
     z-index: 9;
+ }
+ .fade-tab-contorl{
+  position: relative;
+  z-index: 9;
+  top: 0px;
  }
 </style>

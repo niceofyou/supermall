@@ -30,7 +30,7 @@ export default {
     ctbt(index){
       this.isactive=index,
       this.$emit('tabclick',index)
-      console.log('aaa')
+    
     }
   },
 }

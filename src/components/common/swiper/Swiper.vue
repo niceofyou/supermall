@@ -3,9 +3,12 @@
     <div ref="mySwiper" class="swiper-container" :id="currentIndex"  >
       <div class="swiper-wrapper">
         <div class="swiper-slide my-swiper-slide" v-for="(item,index) of slideList" :key="index">
-            <a :href="item.link">
-            <img :src="item.image" alt="">
-          </a>
+             <slot :item="item">
+              <a :href="item.link">
+                <img :src="item.image" alt="" @load="bannerloade">
+              </a>
+            </slot>
+         
          
         </div>
       </div>
@@ -18,14 +21,19 @@
   </div>
 </template>
 <script>
+
+
 import Swiper from 'swiper'
 import "swiper/css/swiper.css";
 export default {
+ 
   name: 'CarouselContainer',
   props: ['slideList','currentIndex'],
   data(){
     return {
       currentSwiper:null,
+      isloade:false
+
     }
   },
   watch:{
@@ -43,6 +51,13 @@ export default {
     this.initSwiper()
   },
   methods:{
+    //监听图片加载完成
+    bannerloade(){
+      if(!this.isloade){
+      this.$emit('swiperload')
+      this.isloade=true
+    }
+  },
     //鼠标移入暂停自动播放
     stopAutoPlay() {
        this.currentSwiper.autoplay.stop()
@@ -110,7 +125,8 @@ export default {
   },
   destroyed() {
     this.destroySwiper()
-  }
+  },
+
 }
 </script>
 <style scoped>

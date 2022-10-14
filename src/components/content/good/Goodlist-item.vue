@@ -1,6 +1,6 @@
 <template>
- <div class="good-item">
-     <img :src="gooditem.show.img" alt=""> 
+ <div class="good-item" @click="goodchilk">
+     <img :src="gooditem.show.img" alt="" @load="imgload"> 
      <div class="goodsinfo">
        <p> {{gooditem.title}}</p>
        <span class="price">{{gooditem.price}}</span>
@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import router from '@/router';
+
 export default {
   props:{
     gooditem:{
@@ -19,6 +21,14 @@ export default {
       return:{}
      }
       
+    }
+  },
+  methods:{
+    imgload(){
+      this.$bus.emit('imgloadeover')
+    },
+    goodchilk(){
+      this.$router.push('/detail/'+this.gooditem.iid)
     }
   }
 }
