@@ -25,12 +25,8 @@ export default {
        return[]
      }
     }
-  },
-  created(){
-    //获取商品id
-      
-       console.log(this.dimg)
-    }
+  }
+ 
   
 }
 

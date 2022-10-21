@@ -10,5 +10,7 @@ module.exports = {
         'views':'@/views',
       }
      }
-  }
+  },
+ chainWebpack: config => {config.resolve.symlinks(true); }
 }
+
